@@ -3,8 +3,9 @@ import Vapor
 /// Register your application's routes here.
 public func routes(_ router: Router) throws {
     // Basic "It works" example
+    RCLController(router: router)
     router.get { req in
-        return "It works!"
+        return try req.view().render("index.html")
     }
     
     // Basic "Hello, world!" example

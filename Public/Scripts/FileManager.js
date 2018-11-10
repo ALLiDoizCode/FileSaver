@@ -40,7 +40,9 @@
         var seq;
         chunks.unshift(fileInfoHex);
         console.log(chunks.length)
+        console.log(address)
         accountInfo(function(obj){
+            console.log(obj)
             seq = obj.result.account_data.Sequence
             var num = 1
             fileStart = seq
@@ -54,20 +56,23 @@
                 num++
                 //tmp = _appendBuffer(tmp,hexToArrayBuffer(chunk))
             })
-            fileEnd = fileStart+blobs.length - 1 
+            fileEnd = fileStart+blobs.length
             console.log(fileStart)
             console.log(fileEnd)
             console.log(chunks.length)
             console.log(blobs.length)
-            if(blobs.length == chunks.length){
-                console.log("boom")
-                //saveChunks(blobs,0)
-                previous = [];
-                chunks = [];
-                blobs = [];
-                partial;   
-            }  
-        },"rpFWYxZe5kS6Ubwd6j3iu4fAGL6jgRzAzi")
+            saveFile(function(){
+                if(blobs.length == chunks.length){
+                    console.log("boom")
+                    saveChunks(blobs,0)
+                    previous = [];
+                    chunks = [];
+                    blobs = [];
+                    partial;   
+                } 
+            },address,""+fileStart,""+fileEnd,name)
+             
+        },address)
         //var base = "data:"+type+";base64,"+base64ArrayBuffer(tmp)
         /*console.log(tmp)
         console.log(base)*/

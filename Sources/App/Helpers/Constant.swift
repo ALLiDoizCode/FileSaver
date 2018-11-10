@@ -9,6 +9,7 @@ import Foundation
 
 class Constants {
     let testURL = "https://s.altnet.rippletest.net:51234/"
+    let prodURL = "https://s2.ripple.com:51234/"
     let DatraURL = "https://data.ripple.com/v2/"
     let address = ""
 }

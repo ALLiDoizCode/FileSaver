@@ -51,6 +51,44 @@ let getTransaction = function(callback,hash) {
   xhttp.send(myJsonString);
 }
 
+function saveFile(callback,address,start,end,name){
+  var json = {
+    address:address,
+    start:start,
+    end:end,
+    name:name
+  }
+
+  var jsonString = JSON.stringify(json);
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        //var myObj = JSON.parse(xhttp.responseText);
+        if(callback) callback();
+      }else {
+      }
+  };
+  xhttp.open("POST", "RCL/saveFile", true);
+  xhttp.setRequestHeader("Content-type", "application/json");
+  xhttp.send(jsonString);
+}
+
+
+function getFiles(callback,address){
+ 
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        var myObj = JSON.parse(xhttp.responseText);
+        if(callback) callback(myObj);
+      }else {
+      }
+  };
+  xhttp.open("GET", "RCL/getFiles/"+address, true);
+  xhttp.setRequestHeader("Content-type", "application/json");
+  xhttp.send();
+}
 function accountHistory(callback,address,min_sequence,max_sequence) {
   var url = "RCL/history/"+address+"/"+min_sequence+"/"+max_sequence;
   var xhttp = new XMLHttpRequest();
@@ -58,7 +96,6 @@ function accountHistory(callback,address,min_sequence,max_sequence) {
     if (this.readyState == 4 && this.status == 200) {
       console.log(xhttp.responseText);
       var myObj = JSON.parse(xhttp.responseText);
-      var myJsonString = JSON.stringify(myObj);
       if(callback) callback(myObj);
     }else {
     }

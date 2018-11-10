@@ -2,12 +2,18 @@ import MongoKitten
 
 class MongoClient {
     var file_collection:MongoCollection!
-    var myDatabase:Database!
+    var database:Database!
+    var server:Server!
     static var sharedInstance:MongoClient!
     init(){
         do {
-            myDatabase = try MongoKitten.Database("mongodb://localhost/my_database")
-            file_collection = myDatabase!["file_collection"]
+            server = try Server("mongodb://heroku_4cdzkbft:dcdb8e4f10v2ldjt9jb56dacrh@ds141406.mlab.com:41406/heroku_4cdzkbft")
+            database = server["heroku_4cdzkbft"]
+            file_collection = database!["file_collection"]
+        
+            if server.isConnected {
+                print("Connected successfully to server")
+            }
             
         }catch {
             

@@ -11,4 +11,5 @@ struct FileInfo:Content {
     var address:String
     var start:String
     var end:String
+    var name:String
 }

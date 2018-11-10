@@ -16,7 +16,7 @@ enum ClientRoute {
         var httpReq = HTTPRequest()
         switch self {
         case .accountInfo(let account):
-            httpReq = HTTPRequest(method: .POST, url: "\(Constants().testURL)")
+            httpReq = HTTPRequest(method: .POST, url: "\(Constants().prodURL)")
             httpReq.contentType = .json
             let jsonDecoder = JSONEncoder()
             let data = try jsonDecoder.encode(account)
@@ -26,7 +26,7 @@ enum ClientRoute {
             httpReq = HTTPRequest(method: .GET, url: "\(Constants().DatraURL)accounts/\(address)/transactions?type=Payment&result=tesSUCCESS&limit=1000&min_sequence=\(min)&max_sequence=\(max)")
             httpReq.contentType = .json
         case .submit(let blob):
-            httpReq = HTTPRequest(method: .POST, url: "\(Constants().testURL)")
+            httpReq = HTTPRequest(method: .POST, url: "\(Constants().prodURL)")
             httpReq.contentType = .json
             let jsonDecoder = JSONEncoder()
             let data = try jsonDecoder.encode(blob)

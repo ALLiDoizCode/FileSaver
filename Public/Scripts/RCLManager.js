@@ -1,6 +1,21 @@
+var address = ""
+var secret = ""
+var recievingAddress = ""
+
+
+getFiles(function(obj){
+    console.log(obj)
+    let fileAddress = obj[1].address
+    let start = obj[1].start
+    let end = obj[1].end
+    let name = obj[1].name
+    getChunks(function(myobj){
+
+    },fileAddress,start,end)
+},address)
 function sendChunk(chunk,seq){
     //console.log(chunk)
-    var blob = blobManager.sendPayment("rpFWYxZe5kS6Ubwd6j3iu4fAGL6jgRzAzi","ssvQ5cMKUBwxYp7esAfnGG74w9fsA",seq,"50000","rGFWGqRZRVA8Zuok7yVg2AK4wJu51wRSDz","0.000001",null,null,[chunk.toUpperCase()])
+    var blob = blobManager.sendPayment(address,secret,seq,"50000",recievingAddress,"0.000001",null,null,[chunk.toUpperCase()])
     console.log(blob)
     console.log(blob.txJson.Memos[0].Memo.MemoData.hexDecode())
     return blob
@@ -15,47 +30,48 @@ function saveChunks(chunks,i){
 }
 
 function getChunks(callback,address,start,end){
-    var tmp = new Uint8Array()
-    var total = 0;
     accountHistory(function(obj){
         console.log(obj)
-        formFile(callback)
+        formFile(callback,obj)
     },address,start,end)
 }
 
-function formFile(callback) {
+function formFile(callback,obj) {
+    var tmp = new Uint8Array()
+    var total = 0;
     var chunks = []
     var name;
     var type;
-    var objReverse = obj.result.transactions.reverse()
-    for(var i = start; start <= end; start++){
-        if(objReverse[i].tx.Memos != undefined){
-            chunks.push(transaction.tx.Memos[0].Memo.MemoData)
-            var amount = parseInt(transaction.tx.Amount)
-            var fee = parseInt(transaction.tx.Fee)
+    var transactions = obj.transactions
+    for(var i = 0; i < transactions.length; i++){
+        if(transactions[i].tx.Memos != undefined){
+            chunks.push(transactions[i].tx.Memos[0].Memo.MemoData)
+            var amount = parseInt(transactions[i].tx.Amount)
+            var fee = parseInt(transactions[i].tx.Fee)
             total = total + fee + amount
-            console.log(transaction.tx)
+            console.log(transactions[i].tx)
         }
     }
     console.log(chunks.length)
     chunks.forEach(function(chunk){
         if(chunk == chunks[0]){
-            var fileInfo = JSON.parse(chunk)
+            console.log(chunk.hexDecode())
+            var fileInfo = JSON.parse(chunk.hexDecode())
             console.log(fileInfo)
             console.log(fileInfo.name)
             console.log(fileInfo.type)
             name = fileInfo.name
             type = fileInfo.type
         }else {
-            //tmp = _appendBuffer(tmp,hexToArrayBuffer(chunk))
+            tmp = _appendBuffer(tmp,hexToArrayBuffer(chunk))
         }
     })
-    /*var base = "data:"+type+";base64,"+base64ArrayBuffer(tmp)
+    var base = "data:"+type+";base64,"+base64ArrayBuffer(tmp)
     console.log(tmp)
     console.log(base)
     console.log((total/1000000)+"XRP")
     if(callback) callback(obj);
-    saveAs(base,name);*/
+    saveAs(base,name);
 }
 
 String.prototype.hexEncode = function(){

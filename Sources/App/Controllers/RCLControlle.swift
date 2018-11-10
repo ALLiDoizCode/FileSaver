@@ -6,6 +6,7 @@
 //
 
 import Vapor
+import MongoKitten
 
 class RCLController {
     var router:Router?
@@ -14,6 +15,8 @@ class RCLController {
         self.router = router
         let RCLRoute = router.grouped("RCL")
         RCLRoute.get("history",String.parameter,String.parameter,String.parameter,use: history)
+        RCLRoute.get("getFiles",String.parameter,use: getFiles)
+        RCLRoute.post("saveFile",use: saveFile)
         RCLRoute.post("accountInfo",use: accountInfo)
         RCLRoute.post("submit",use: submit)
     }
@@ -33,6 +36,38 @@ class RCLController {
                 return response
             })
         }
+    }
+    
+    func saveFile(req: Request) throws -> Response {
+
+        let fileInfo = try req.content.decode(FileInfo.self)
+        fileInfo.map { object in
+            print(object)
+            MongoClient.sharedInstance.saveFile(fileInfo:object)
+            return
+        }
+        req.response().http.status = HTTPResponseStatus.ok
+        let response = req.response()
+        return response
+    }
+    
+    func getFiles(req: Request) throws -> Response {
+        let address = try req.parameters.next(String.self)
+        let docs = MongoClient.sharedInstance.getFiles(address: address)
+        let bsonDecoder = BSONDecoder()
+        let jsonEncoder = JSONEncoder()
+        var files:[FileInfo] = []
+        for doc in docs {
+            if let fileInfo = try? bsonDecoder.decode(FileInfo.self, from: doc) {
+                files.append(fileInfo)
+            }
+        }
+        
+        let data = try jsonEncoder.encode(files)
+        let response = req.response()
+        response.http.body = HTTPBody(data: data)
+        
+        return response
     }
     
     func history(req: Request) throws -> Future<Response>{

@@ -8,7 +8,9 @@
   var partial;
   var type;
   var name;
-
+  var fileInfoHex;
+  var fileStart;
+  var fileEnd;    
   inputElement.addEventListener("change", handleFiles, false);
   function handleFiles() {
     var file = this.files[0];
@@ -21,6 +23,12 @@
     if(file===undefined){
         return;
     }
+    var fileInfoJSON = {
+        name:name,
+        type:type
+    }
+    var fileInfoString = JSON.stringify(fileInfoJSON);
+    fileInfoHex = fileInfoString.hexEncode()
     var counter = 0;
    
     loading(file,
@@ -30,10 +38,12 @@
       }, function () {
         var tmp = new Uint8Array()
         var seq;
+        chunks.unshift(fileInfoHex);
         console.log(chunks.length)
         accountInfo(function(obj){
             seq = obj.result.account_data.Sequence
             var num = 1
+            fileStart = seq
             console.log(obj)
             chunks.forEach(function(chunk){
                 var blob = sendChunk(chunk,seq)
@@ -44,10 +54,13 @@
                 num++
                 //tmp = _appendBuffer(tmp,hexToArrayBuffer(chunk))
             })
+            fileEnd = fileStart+blobs.length - 1 
+            console.log(fileStart)
+            console.log(fileEnd)
             console.log(chunks.length)
             console.log(blobs.length)
-            console.log(blobs[0])  
             if(blobs.length == chunks.length){
+                console.log("boom")
                 //saveChunks(blobs,0)
                 previous = [];
                 chunks = [];
@@ -132,6 +145,11 @@
         }
     }
   }
+
+  function saveToDB(address,start,end,password){
+
+  }
+
   /*var file = event.target.files[0];
   var reader = new FileReader();
   reader.onload = function (event) {
